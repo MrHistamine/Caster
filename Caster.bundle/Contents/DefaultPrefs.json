@@ -1,0 +1,21 @@
+[
+	{
+		"id"		:	"app_name_key",
+		"label"		:	"Application Name",
+		"type"		:	"text",
+		"default"	:	"My Application Caster"
+	},
+	{
+		"id"		:	"app_cl_params_key",
+		"label"		:	"Command Line Parameters",
+		"type"		:	"text",
+		"default"	:	""
+	},
+	{
+		"id"		:	"home_scrn_sect_key",
+		"label"		:	"Home Screen Section",
+		"type"		:	"enum",
+		"values"	:	["Video", "Music", "Photos", "Applications"],
+		"default"	:	"Applications"
+	}
+]
