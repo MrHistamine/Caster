@@ -1,10 +1,8 @@
-==========================================
 Caster - A Plex Plug-in
 ==========================================
 
 Caster is a plug-in for the Plex Media Server & Center suite of software programs.  This plug-in allows you to create a plug in that launches an external program.
 
-==========================================
 Installation
 ==========================================
 NOTE:  For directions containing illustrations, download the "Caster_Installation_Instructions.pdf", under the "Documentation" folder.
