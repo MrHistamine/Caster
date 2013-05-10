@@ -199,8 +199,6 @@ def Start():
 def MainMenu(initialOpen = True):
     dir = ObjectContainer(view_group = VG_MAIN_MENU, art = R(ART), title1 = L('menu_main_title'), replace_parent = True, no_cache = True)
     
-    Log.Debug('CURRENT DATETIME DATE:  ' + str(datetime.date))
-    
     if(initialOpen):
         # Initialize the settings dictionary, each time the main menu is opened from the main interface.
         Log.Debug('Initializing the settings dictionary.')
