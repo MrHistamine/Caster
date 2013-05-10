@@ -15,3 +15,7 @@ tray icon, and select "Open Plug-ins Folder".
 it open, refresh the browser).  If it doesn't appear after a few minutes, restart
 PMS (right-click the PMS tray icon, select Exit then, re-launch the PMS
 application).
+
+How To Use Caster
+==========================================
+NOTE:  See the document labeled "How_to_Cast_an_External_Program.pdf" under the "Documentation" folder, for an example of how to create casters (really just Plex channels).
