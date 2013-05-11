@@ -1,11 +1,11 @@
 Caster - A Plex Channel
 ==========================================
 
-Caster is a channel for the Plex Media Server & Center suite of software programs.  This channel allows you to create casters (reall just channels) that launch external applications.
+Caster is a channel for the Plex Media Server & Center suite of software programs.  This channel allows you to create casters (really just channels) that launch external applications.
 
 Installation
 ==========================================
-NOTE:  For directions containing illustrations, download the "Caster_Installation_Instructions.pdf", under the "Documentation" folder.
+NOTE:  For illustrated directions, see the document entitled "Caster_Installation_Instructions.pdf", under the "Documentation" folder.
 
 1. On the computer system running Plex Media Server (PMS), right-click on its
 tray icon, and select "Open Plug-ins Folder".
@@ -18,4 +18,4 @@ application).
 
 How To Use Caster
 ==========================================
-NOTE:  See the document labeled "How_to_Cast_an_External_Program.pdf" under the "Documentation" folder, for an example of how to create casters (really just Plex channels).
+NOTE:  See the document entitled "How_to_Cast_an_External_Program.pdf" under the "Documentation" folder, for step-by-step instructions on how to create casters (really just Plex channels).
