@@ -15,10 +15,10 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #   Program:    Caster
-#   Version:    1.2
+#   Version:    1.2.1
 #   Author:     Darin Woods, Niridia Computer Systems
 #   Email:      support@niridia.com
-#   Updated:    2013-03-21
+#   Updated:    2013-09-12
 #   Summary:    Contains code that allows a user to set properties of an application launcher, and
 #               outputs those settings to a complete plugin folder structure containing the
 #               necessary code, info, and settings files.
@@ -28,7 +28,7 @@ import os
 import shutil
 import re
 
-CASTER_VERSION = '1.2'
+CASTER_VERSION = '1.2.1'
 APPLICATION_PREFIX = "/applications/caster"
 VG_MAIN_MENU = 'CasterMainMenu'
 VG_DIR_NAV = 'CasterDirNav'
@@ -123,7 +123,7 @@ INIT_CODE = """#################################################################
 #
 #   Author:     Darin Woods, Niridia Computer Systems
 #   Email:      support@niridia.com
-#   Created:    2013-02-23
+#   Created:    2013-09-12
 #   Summary:    Contains generated code used to launch a user-defined application.
 ####################################################################################################
 
