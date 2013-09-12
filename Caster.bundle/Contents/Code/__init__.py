@@ -49,6 +49,7 @@ APP_NAME = 'Caster'
 ART = 'art-default.png'
 ICON = 'icon-default.png'
 NONE_TEXT = L('app_none_text')
+INITIAL_LOAD = True
 
 ROOT_DIRECTORY = "C:/"
 PLEX_SERVER_DIR = "\\Plex Media Server"
@@ -196,13 +197,15 @@ def Start():
 #                                from the "Applications" menu
 #       returns - the main menu directory's navigation structure
 #
-def MainMenu(initialOpen = True):
+def MainMenu():
     dir = ObjectContainer(view_group = VG_MAIN_MENU, art = R(ART), title1 = L('menu_main_title'), replace_parent = True, no_cache = True)
-    
-    if(initialOpen):
+    global INITIAL_LOAD
+
+    if(INITIAL_LOAD is True):
         # Initialize the settings dictionary, each time the main menu is opened from the main interface.
         Log.Debug('Initializing the settings dictionary.')
         ResetSettingsDict()
+        INITIAL_LOAD = False
     
     # Add directory object to apply preferences to the generated launcher.
     dir.add(PrefsObject(title = L('prefs_menu_title'),
@@ -322,7 +325,7 @@ def ApplyValue(key, value):
         SETTINGS_DICT[key] = value
         #Log.Debug('The settings dictionary has been updated:  ' + key + ',' + SETTINGS_DICT[key] + '.')
 
-    return MainMenu(False)
+    return MainMenu()
 
 ####################################################################################################
 #   Process the input from the on-screen keyboard.
