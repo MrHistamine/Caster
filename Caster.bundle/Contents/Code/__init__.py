@@ -15,20 +15,22 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #   Program:    Caster
-#   Version:    1.2.1
+#   Version:    1.3.2
 #   Author:     Darin Woods, Niridia Computer Systems
 #   Email:      support@niridia.com
-#   Updated:    2013-09-12
+#   Updated:    2014-01-15
 #   Summary:    Contains code that allows a user to set properties of an application launcher, and
 #               outputs those settings to a complete plugin folder structure containing the
 #               necessary code, info, and settings files.
 ####################################################################################################
 
 import os
+import sys
 import shutil
 import re
+import time
 
-CASTER_VERSION = '1.2.1'
+CASTER_VERSION = '1.3.2'
 APPLICATION_PREFIX = "/applications/caster"
 VG_MAIN_MENU = 'CasterMainMenu'
 VG_DIR_NAV = 'CasterDirNav'
@@ -54,7 +56,7 @@ INITIAL_LOAD = True
 ROOT_DIRECTORY = "C:/"
 PLEX_SERVER_DIR = "\\Plex Media Server"
 SETTINGS_DICT = {}
-VALID_EXECUTABLES = ['.exe', '.bat']    # List of valid executables
+VALID_EXECUTABLES = ['.exe', '.bat', '.app']    # List of valid executables
 VALID_IMAGES = ['.png', '.jpg', '.jpeg']   # List of valid image types
 VALID_TEXT = ['.txt'] # List of valid text file types
 
@@ -123,7 +125,7 @@ INIT_CODE = """#################################################################
 #
 #   Author:     Darin Woods, Niridia Computer Systems
 #   Email:      support@niridia.com
-#   Created:    2013-09-12
+#   Created:    {creationDate}
 #   Summary:    Contains generated code used to launch a user-defined application.
 ####################################################################################################
 
@@ -199,7 +201,11 @@ def Start():
 #
 def MainMenu():
     dir = ObjectContainer(view_group = VG_MAIN_MENU, art = R(ART), title1 = L('menu_main_title'), replace_parent = True, no_cache = True)
+    global ROOT_DIRECTORY
     global INITIAL_LOAD
+
+    ROOT_DIRECTORY = os.path.splitdrive(sys.executable)[0] + '/'
+    Log.Debug('Root Directory:  ' + ROOT_DIRECTORY)
 
     if(INITIAL_LOAD is True):
         # Initialize the settings dictionary, each time the main menu is opened from the main interface.
@@ -496,6 +502,7 @@ def WriteInitFile(destPath, normalizedName):
     
     outFile.write(INIT_CODE.format(homeSect = Prefs[APP_SECT_KEY].lower(),
                   casterVersion = CASTER_VERSION,
+				  creationDate = time.strftime("%Y-%m-%d"),
                   appName = normalizedName,
                   artFileExt = sourceArtExt,
                   iconFileExt = sourceIconExt,
