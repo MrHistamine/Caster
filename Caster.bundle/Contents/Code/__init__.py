@@ -279,7 +279,7 @@ def DirectoryNavigator(settingKey, newDirectory = None, fileFilter = None):
             cleanedPath = None
         else:
             cleanedPath = cleanedPath[:(splitIndex + 1)]
-        #Log.Debug('Adding entry allowing navigation back to parent directory; setting key:  ' + settingKey + ', parent directory:  ' + cleanedPath)
+        Log.Debug('Adding entry allowing navigation back to parent directory; setting key:  ' + settingKey + ', parent directory:  ' + str(cleanedPath))
         dir.add(DirectoryObject(key = Callback(DirectoryNavigator, settingKey = settingKey, newDirectory = cleanedPath, fileFilter = fileFilter),
                                 title = L('dir_back_title'),
                                 summary = L('dir_back_desc')))
@@ -307,12 +307,12 @@ def DirectoryNavigator(settingKey, newDirectory = None, fileFilter = None):
     # selectable items (if the directory is selected).
     for item in subItems:
         if(IsValidFile(item, fileFilter)):
-            #Log.Debug('The following file is valid: \"' + basePath + item + '\"; save it if clicked.')
+            Log.Debug('The following file is valid: \"' + basePath + item + '\"; save it if clicked.')
             dir.add(DirectoryObject(key = Callback(ApplyValue, key = settingKey, value = basePath + item),
                                     title = item,
                                     thumb = R(fileTypeIcon)))
         elif(("." not in item)):
-            #Log.Debug('Set up navigation to the following directory:  ' + basePath + item + '/')
+            Log.Debug('Set up navigation to the following directory:  ' + basePath + item + '/')
             dir.add(DirectoryObject(key = Callback(DirectoryNavigator, settingKey = settingKey, newDirectory = basePath + item + '/', fileFilter = fileFilter),
                                     title = item,
                                     thumb = R(THUMBS_PREFIX + 'folder.png')))
@@ -326,10 +326,10 @@ def DirectoryNavigator(settingKey, newDirectory = None, fileFilter = None):
 #       returns - the main menu directory's navigation structure
 #
 def ApplyValue(key, value):
-    #Log.Debug('Applying \"' + value + '\", using \"' + key + '\" as its key.')
+    Log.Debug('Applying \"' + value + '\", using \"' + key + '\" as its key.')
     if((key is not "") and (value is not "")):
         SETTINGS_DICT[key] = value
-        #Log.Debug('The settings dictionary has been updated:  ' + key + ',' + SETTINGS_DICT[key] + '.')
+        Log.Debug('The settings dictionary has been updated:  ' + key + ',' + SETTINGS_DICT[key] + '.')
 
     return MainMenu()
 
@@ -349,16 +349,16 @@ def InputProcessor(query, key):
 #
 def IsValidFile(checkItem, validationList):
     if(validationList is None):
-        #Log.Debug('A list to validate against, was not passed through.')
+        Log.Debug('A list to validate against, was not passed through.')
         return not True
 
     for extension in validationList:
-        #Log.Debug('Checking \"' + checkItem + '\" against \"' + extension + '\"...')
+        Log.Debug('Checking \"' + checkItem + '\" against \"' + extension + '\"...')
         if(checkItem.endswith(extension)):
-            #Log.Debug('\"' + checkItem + '\" has a valid extension.')
+            Log.Debug('\"' + checkItem + '\" has a valid extension.')
             return True
 	
-    #Log.Debug('\"' + checkItem + '\" does not have a valid extension.')
+    Log.Debug('\"' + checkItem + '\" does not have a valid extension.')
     return not True
 
 ####################################################################################################
@@ -394,7 +394,7 @@ def CopyFile(srcFilePath, destDirPath, destFileName):
     if(srcFilePath is not NONE_TEXT):
         sourceDir, sourceExt = os.path.splitext(srcFilePath)
         destFile = os.path.join(destDirPath, destFileName + sourceExt)
-        #Log.Debug('Copying the source file \"' + srcFilePath + '\", to the following location:  ' + destFile)
+        Log.Debug('Copying the source file \"' + srcFilePath + '\", to the following location:  ' + destFile)
         shutil.copy(srcFilePath, destFile)
 
 ####################################################################################################
@@ -410,7 +410,7 @@ def CreateAppCaster():
     pluginFolder = os.getcwd().strip('\\?')
     splitIndex = pluginFolder.rfind(PLEX_SERVER_DIR) + len(PLEX_SERVER_DIR)
     pluginFolder = pluginFolder[:(splitIndex + 1)] + WIN_PLUGIN_FOLDER
-    #Log.Debug('Looking for the plug-in folder, at the following address:  ' + pluginFolder)
+    Log.Debug('Looking for the plug-in folder, at the following address:  ' + pluginFolder)
     if(os.path.isdir(pluginFolder) is not True):
         Log.Error('The plug-in folder at:  \"' + pluginFolder + '\", could not be found!')
         return MessageContainer(L('msg_no_folder_title'), str(L('msg_no_folder_body')).format(missingFolder = pluginFolder))
