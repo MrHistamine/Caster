@@ -24,6 +24,7 @@
 #               necessary code, info, and settings files.
 ####################################################################################################
 
+import platform
 import os
 import sys
 import shutil
@@ -52,6 +53,7 @@ ART = 'art-default.png'
 ICON = 'icon-default.png'
 NONE_TEXT = L('app_none_text')
 INITIAL_LOAD = True
+LINUX_SYS = False
 
 ROOT_DIRECTORY = "C:/"
 PLEX_SERVER_DIR = "\\Plex Media Server"
@@ -201,8 +203,12 @@ def Start():
 #
 def MainMenu():
     dir = ObjectContainer(view_group = VG_MAIN_MENU, art = R(ART), title1 = L('menu_main_title'), replace_parent = True, no_cache = True)
+    global LINUX_SYS
     global ROOT_DIRECTORY
     global INITIAL_LOAD
+
+    LINUX_SYS = (platform.system() is 'Linux')
+    Log.Debug('Running on platform:  ' + platform.system() + '; is a Linux system? ' + str(LINUX_SYS))
 
     ROOT_DIRECTORY = os.path.splitdrive(sys.executable)[0] + '/'
     Log.Debug('Root Directory:  ' + ROOT_DIRECTORY)
@@ -306,12 +312,12 @@ def DirectoryNavigator(settingKey, newDirectory = None, fileFilter = None):
     # link back to this function; this will generate a new list of
     # selectable items (if the directory is selected).
     for item in subItems:
-        if(IsValidFile(item, fileFilter)):
+        if(IsValidFile(basePath + item, fileFilter)):
             Log.Debug('The following file is valid: \"' + basePath + item + '\"; save it if clicked.')
             dir.add(DirectoryObject(key = Callback(ApplyValue, key = settingKey, value = basePath + item),
                                     title = item,
                                     thumb = R(fileTypeIcon)))
-        elif(("." not in item)):
+        elif(os.path.isdir(basePath + item)):
             Log.Debug('Set up navigation to the following directory:  ' + basePath + item + '/')
             dir.add(DirectoryObject(key = Callback(DirectoryNavigator, settingKey = settingKey, newDirectory = basePath + item + '/', fileFilter = fileFilter),
                                     title = item,
@@ -351,6 +357,10 @@ def IsValidFile(checkItem, validationList):
     if(validationList is None):
         Log.Debug('A list to validate against, was not passed through.')
         return not True
+
+    if(LINUX_SYS and (validationList == VALID_EXECUTABLES)):
+        Log.Debug('Checking that file is executable...')
+        return os.access(checkItem, os.X_OK)
 
     for extension in validationList:
         Log.Debug('Checking \"' + checkItem + '\" against \"' + extension + '\"...')
