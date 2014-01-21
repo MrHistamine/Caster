@@ -207,7 +207,9 @@ def MainMenu():
     global ROOT_DIRECTORY
     global INITIAL_LOAD
 
-    LINUX_SYS = (platform.system() is 'Linux')
+    LINUX_SYS = False
+    if(platform.system() is "Linux"):
+        LINUX_SYS = True
     Log.Debug('Running on platform:  ' + platform.system() + '; is a Linux system? ' + str(LINUX_SYS))
 
     ROOT_DIRECTORY = os.path.splitdrive(sys.executable)[0] + '/'
