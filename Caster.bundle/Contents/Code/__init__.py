@@ -208,7 +208,7 @@ def MainMenu():
     global INITIAL_LOAD
 
     LINUX_SYS = False
-    if(platform.system() is "Linux"):
+    if(platform.system() == "Linux"):
         LINUX_SYS = True
     Log.Debug('Running on platform:  ' + platform.system() + '; is a Linux system? ' + str(LINUX_SYS))
 
