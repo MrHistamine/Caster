@@ -420,6 +420,7 @@ def CreateAppCaster():
     # make sure that the plug-in folder exists before continuing.  If
     # it does not, display a message to the user.
     pluginFolder = os.getcwd().strip('\\?')
+	Log.Debug('Absolute plug-in directory path:  ' + pluginFolder)
     splitIndex = pluginFolder.rfind(PLEX_SERVER_DIR) + len(PLEX_SERVER_DIR)
     pluginFolder = pluginFolder[:(splitIndex + 1)] + WIN_PLUGIN_FOLDER
     Log.Debug('Looking for the plug-in folder, at the following address:  ' + pluginFolder)
