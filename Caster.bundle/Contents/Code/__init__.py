@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #   Program:    Caster
-#   Version:    1.3.2
+#   Version:    1.3.8
 #   Author:     Darin Woods, Niridia Computer Systems
 #   Email:      support@niridia.com
 #   Updated:    2014-01-15
@@ -27,12 +27,13 @@
 import platform
 import os
 import sys
+import subprocess
 import shutil
 import re
 import time
 
-CASTER_VERSION = '1.3.2'
-APPLICATION_PREFIX = "/applications/caster"
+CASTER_VERSION = '1.3.8'
+APPLICATION_PREFIX = "/video/caster"
 VG_MAIN_MENU = 'CasterMainMenu'
 VG_DIR_NAV = 'CasterDirNav'
 THUMBS_PREFIX = 'thumbs-' #'thumbs/'
@@ -54,6 +55,7 @@ ICON = 'icon-default.png'
 NONE_TEXT = L('app_none_text')
 INITIAL_LOAD = True
 LINUX_SYS = False
+WIN_SYS = True
 
 ROOT_DIRECTORY = "C:/"
 PLEX_SERVER_DIR = "\\Plex Media Server"
@@ -131,7 +133,7 @@ INIT_CODE = """#################################################################
 #   Summary:    Contains generated code used to launch a user-defined application.
 ####################################################################################################
 
-import os, subprocess
+import os, subprocess, platform
 
 APPLICATION_PREFIX = '/{homeSect}/{appName}'
 NAME = '{appTitle}'
@@ -156,7 +158,7 @@ def Start():
 #       [Takes no arguments]
 #
 def MainMenu():
-    dir = ObjectContainer(view_group = 'CasterList', art = R(ART), title1 = NAME)
+    dir = ObjectContainer(view_group = 'CasterList', art = R(ART), title1 = NAME, no_cache = True)
     dir.add(DirectoryObject(key = Callback(CastApp), title = '{btnCast}', summary = DESC))
     dir.add(PrefsObject(title = '{btnOptions}', summary = '{optionsDesc}'))
     return dir
@@ -168,6 +170,7 @@ def MainMenu():
 def CastApp():
     Log.Info('Running Application:  \"' + str(Prefs['{runPath}']) + '\", with the following arguments \"' + ClearNoneString(Prefs['{runArgs}']) + '\"')
     subprocess.Popen([str(Prefs['{runPath}']), ClearNoneString(Prefs['{runArgs}'])])
+    return ObjectContainer(header = 'Application Cast', message = '{appTitle} has been cast to:  ' + platform.node())
 
 ####################################################################################################
 #   Converts a string with a None value, to an empty string.
@@ -202,15 +205,20 @@ def Start():
 #       returns - the main menu directory's navigation structure
 #
 def MainMenu():
-    dir = ObjectContainer(view_group = VG_MAIN_MENU, art = R(ART), title1 = L('menu_main_title'), replace_parent = True, no_cache = True)
+    dir = ObjectContainer(view_group = VG_MAIN_MENU, art = R(ART), title1 = L('menu_main_title'), no_cache = True)
     global LINUX_SYS
+    global WIN_SYS
     global ROOT_DIRECTORY
     global INITIAL_LOAD
 
     LINUX_SYS = (platform.system() is 'Linux')
-    Log.Debug('Running on platform:  ' + platform.system() + '; is a Linux system? ' + str(LINUX_SYS))
+    WIN_SYS = (platform.system() is 'Windows')
+    Log.Debug('Running on platform:  ' + platform.system() + '; is a Linux system? ' + str(LINUX_SYS) + ', is a Windows system?' + str(WIN_SYS))
 
-    ROOT_DIRECTORY = os.path.splitdrive(sys.executable)[0] + '/'
+    if(WIN_SYS is True):
+        ROOT_DIRECTORY = "Plex Server"
+    else:
+        ROOT_DIRECTORY = os.path.splitdrive(sys.executable)[0] + '/'
     Log.Debug('Root Directory:  ' + ROOT_DIRECTORY)
 
     if(INITIAL_LOAD is True):
@@ -292,8 +300,19 @@ def DirectoryNavigator(settingKey, newDirectory = None, fileFilter = None):
     else:
         newDirectory = ROOT_DIRECTORY
     
-    basePath = newDirectory
-    subItems = os.listdir(basePath)
+    # If this is a Windows system, and this is the initial listing,
+    # create a list of the drives available on the system.
+    if(newDirectory == ROOT_DIRECTORY and WIN_SYS is True):
+        Log.Debug('Building list of logical drives...')
+        drivelist = subprocess.check_output(["wmic", "logicaldisk", "get", "name"]) #replace "name" with "name,volumename" at some point, for labelling purposes.
+        Log.Debug('Un-formatted logical drive list:\n' + drivelist)
+        subItems = drivelist.split('\n')
+		
+        Log.Debug('List of drives returned:  \n' + str(subItems))
+        basePath = ""
+    else:
+        basePath = newDirectory
+        subItems = os.listdir(basePath)
 
     # Sets the reference to the icon image, based on the type of
     # file we're filtering for.
@@ -312,6 +331,7 @@ def DirectoryNavigator(settingKey, newDirectory = None, fileFilter = None):
     # link back to this function; this will generate a new list of
     # selectable items (if the directory is selected).
     for item in subItems:
+        item = item.strip()
         if(IsValidFile(basePath + item, fileFilter)):
             Log.Debug('The following file is valid: \"' + basePath + item + '\"; save it if clicked.')
             dir.add(DirectoryObject(key = Callback(ApplyValue, key = settingKey, value = basePath + item),
@@ -336,8 +356,9 @@ def ApplyValue(key, value):
     if((key is not "") and (value is not "")):
         SETTINGS_DICT[key] = value
         Log.Debug('The settings dictionary has been updated:  ' + key + ',' + SETTINGS_DICT[key] + '.')
+        return ObjectContainer(header = L('msg_sel_applied_title'), message = str(L('msg_sel_applied_body')).format(appliedValue = value))
 
-    return MainMenu()
+    return ObjectContainer(header = L('msg_sel_failed_title'), message = str(L('msg_sel_failed_body')).format(appliedValue = value))
 
 ####################################################################################################
 #   Process the input from the on-screen keyboard.
@@ -423,7 +444,7 @@ def CreateAppCaster():
     Log.Debug('Looking for the plug-in folder, at the following address:  ' + pluginFolder)
     if(os.path.isdir(pluginFolder) is not True):
         Log.Error('The plug-in folder at:  \"' + pluginFolder + '\", could not be found!')
-        return MessageContainer(L('msg_no_folder_title'), str(L('msg_no_folder_body')).format(missingFolder = pluginFolder))
+        return ObjectContainer(header = L('msg_no_folder_title'), message = str(L('msg_no_folder_body')).format(missingFolder = pluginFolder))
 
     # Here, we create the plugin's ".bundle", "Contents", "Code", and "Resources"
     # folders (if they don't already exist).  First, we normalize the application
@@ -471,7 +492,7 @@ def CreateAppCaster():
     WriteInitFile(codePath, normAppName)
     
     # If everything completed successfully, display a message, indicating success.
-    return MessageContainer(L('msg_success_title'), str(L('msg_success_body')).format(menuName = Prefs[APP_SECT_KEY]))
+    return ObjectContainer(header = L('msg_success_title'), message = str(L('msg_success_body')).format(menuName = Prefs[APP_SECT_KEY]))
     
 ####################################################################################################
 #   Write the passed-in string to the specified file, at the specified address.
